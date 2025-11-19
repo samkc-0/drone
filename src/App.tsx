@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { useChallengeAudio } from "@/hooks/useChallengeAudio";
+import * as Tone from "tone";
 
 import "./index.css";
 import {
@@ -66,6 +67,8 @@ type IntervalGameProps = {
 // Manages the state of the game, and tracks user progress
 
 export function IntervalGame({ challenges }: IntervalGameProps) {
+  const [audioReady, setAudioReady] = useState(false);
+
   const [challengeIdx, setChallengeIdx] = useState<number>(() => {
     const currentChallenge = localStorage.getItem("currentChallenge");
     if (currentChallenge) {
@@ -73,6 +76,13 @@ export function IntervalGame({ challenges }: IntervalGameProps) {
     }
     return 0;
   });
+
+  const handleInitAudio = async () => {
+    console.log("Starting Tone...");
+    await Tone.start();
+    console.log("Tone started. AudioContext is running.");
+    setAudioReady(true);
+  };
 
   const [completed, setCompleted] = useState<Set<number>>(
     () => new Set<number>(),
@@ -135,6 +145,9 @@ export function IntervalGame({ challenges }: IntervalGameProps) {
   if (!challenges) {
     return <div>Loading...</div>;
   }
+  if (!audioReady) {
+    return <Button onClick={handleInitAudio}>Start Game</Button>;
+  }
 
   return (
     <div>
@@ -186,7 +199,7 @@ type ChallengeViewProps = {
 };
 
 export function ChallengeView(props: ChallengeViewProps) {
-  const { playSliderPitch, stopSlider, startDrone, stopDrone, stopAll } =
+  const { playSliderPitch, stopSlider, startDrone, stopDrone } =
     useChallengeAudio(props.challenge);
   const { challenge, status, onSuccess } = props;
 
@@ -250,10 +263,22 @@ export function ChallengeView(props: ChallengeViewProps) {
           step={1}
           onValueChange={handleSliderChange}
         />
-        <Button onClick={stopDrone}>Stop</Button>
-        <Button onClick={startDrone}>Start</Button>
+        <Button
+          onClick={() => {
+            stopSlider();
+            stopDrone();
+          }}
+        >
+          Stop
+        </Button>
+        <Button
+          onClick={() => {
+            startDrone();
+          }}
+        >
+          Start
+        </Button>
         <Button onClick={handleSubmit}>submit</Button>
-        <Button onClick={stopAll}>Stop All</Button>
       </CardContent>
     </Card>
   );

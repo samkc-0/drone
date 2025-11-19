@@ -42,9 +42,6 @@ export function useChallengeAudio(challenge: Challenge) {
   const stopDrone = () => {
     toneService.stopDrone(challenge.droneSynthId);
   };
-  const stopAll = () => {
-    toneService.stopAll();
-  };
 
-  return { playSliderPitch, stopSlider, startDrone, stopDrone, stopAll };
+  return { playSliderPitch, stopSlider, startDrone, stopDrone };
 }
