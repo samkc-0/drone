@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "name": "perfect_fifth_match",
+    "sliderInitialTone": "C4",
+    "sliderRange": { "min": "A3", "max": "E5" },
+    "sliderStep": "semitone",
+    "sliderSynthId": 1,
+    "droneSynthId": 10,
+    "droneNote": "E5",
+    "interval": "P5"
+  },
+  {
+    "id": 2,
+    "name": "tritone_quartertone_steps",
+    "sliderInitialTone": "G3",
+    "sliderRange": { "min": "F3", "max": "C5" },
+    "sliderStep": "quartertone",
+    "sliderSynthId": 2,
+    "droneSynthId": 11,
+    "droneNote": "C5",
+    "interval": "TT"
+  },
+  {
+    "id": 3,
+    "name": "major_third_steps_minor_seventh_target",
+    "sliderInitialTone": "D4",
+    "sliderRange": { "min": "C4", "max": "G5" },
+    "sliderStep": "major_third",
+    "sliderSynthId": 3,
+    "droneSynthId": 12,
+    "droneNote": "E5",
+    "interval": "m7"
+  }
+]
