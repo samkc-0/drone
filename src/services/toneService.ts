@@ -9,38 +9,34 @@ class ToneService {
   }
 
   init() {
-    const synths0 = new Tone.Synth({
+    this.synths[0] = new Tone.Synth({
       oscillator: { type: "sawtooth" },
       envelope: { attack: 0.01, release: 0.2 },
     }).toDestination();
 
-    const synth1 = new Tone.Synth({
+    this.synths[1] = new Tone.Synth({
       oscillator: { type: "triangle" },
       envelope: { attack: 0.05, release: 0.1 },
     }).toDestination();
 
-    const synth2 = new Tone.PolySynth(Tone.Synth, {
+    this.synths[2] = new Tone.PolySynth(Tone.Synth, {
       oscillator: { type: "sine" },
       envelope: { attack: 1.0, release: 2.0 },
     }).toDestination();
 
-    const synth3 = new Tone.PolySynth(Tone.Synth, {
+    this.synths[3] = new Tone.PolySynth(Tone.Synth, {
       oscillator: { type: "fatsawtooth" },
       envelope: { attack: 0.4, release: 1.2 },
     }).toDestination();
-
-    this.synths = [synths0, synth1, synth2, synth3];
   }
 
   attack(id: number, note: string) {
     const synth = this.synths[id % this.synths.length];
-    if (!synth)
-      return console.warn(
-        "Synth not found:",
-        id,
-        "sythns looks like: ",
-        this.synths,
-      );
+    if (!synth) {
+      console.warn("Synth not found:", id);
+      const fallbackSynth = this.synths[0];
+      fallbackSynth.triggerAttack(note);
+    }
     synth.triggerAttack(note);
   }
 
