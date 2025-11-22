@@ -35,7 +35,8 @@ class ToneService {
     if (!synth) {
       console.warn("Synth not found:", id);
       const fallbackSynth = this.synths[0];
-      fallbackSynth.triggerAttack(note);
+      const now = Tone.now();
+      fallbackSynth.triggerAttack(note, now);
     }
     synth.triggerAttack(note);
   }

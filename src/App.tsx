@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,12 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import type { NoteWithDelta } from "./util/tone";
+import {
+  noteRangeToFrequency,
+  intervalNameToToneStep,
+  frequencyToNoteWithDelta,
+} from "./util/tone";
 
 export type SliderRange = {
   min: string;
@@ -203,6 +209,30 @@ export function ChallengeView(props: ChallengeViewProps) {
     useChallengeAudio(props.challenge);
   const { challenge, status, onSuccess } = props;
 
+  const notes = useMemo(() => {
+    const step = intervalNameToToneStep(challenge.sliderStep);
+    const freqs = noteRangeToFrequency(
+      challenge.sliderRange.min,
+      challenge.sliderRange.max,
+      step,
+    );
+    const notes = freqs.map((f: number) => {
+      return frequencyToNoteWithDelta(f);
+    });
+
+    return notes;
+  }, []);
+
+  const initialSliderPos = notes.findIndex(
+    (n: NoteWithDelta) => n.noteName === challenge.sliderInitialTone,
+  );
+
+  const [sliderValue, setSliderValue] = useState([initialSliderPos]);
+
+  const [currentUserNote, setCurrentUserNote] = useState<NoteWithDelta>(
+    notes[initialSliderPos],
+  );
+
   const formatTitle = () => {
     const name = challenge.name;
     return name
@@ -212,39 +242,16 @@ export function ChallengeView(props: ChallengeViewProps) {
   };
 
   const handleSliderChange = (value: number[]) => {
-    stopSlider();
-    if (value[0] == null) {
-      console.log("no value");
-    }
-    const x = value[0];
-    const convertSliderToNote = () => {
-      switch (x) {
-        case 0:
-          return "C3";
-        case 1:
-          return "D3";
-        case 2:
-          return "E3";
-        case 3:
-          return "F3";
-        case 4:
-          return "G3";
-        case 5:
-          return "A3";
-        case 6:
-          return "B3";
-        case 7:
-          return "C4";
-      }
-    };
-
-    const note = convertSliderToNote().replace("3", "5");
-    console.log("playing note", note, " and drone is ", challenge.droneNote);
-
-    if (note) {
-      playSliderPitch(note);
-    }
+    setSliderValue(value);
   };
+
+  useEffect(() => {
+    if (Tone.getContext().state != "running") return;
+    // wait 1 sec
+    const note = notes[sliderValue[0]];
+    setCurrentUserNote(note);
+    playSliderPitch(note.noteName);
+  }, [sliderValue]);
 
   const handleSubmit = () => {
     onSuccess();
@@ -254,12 +261,16 @@ export function ChallengeView(props: ChallengeViewProps) {
       <CardHeader>
         <CardTitle className="font-bold justify-center">
           <h1>{formatTitle()}</h1>
+          <h2>
+            {currentUserNote.noteName} - {sliderValue}
+          </h2>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <Slider
-          defaultValue={[0]}
-          max={7}
+          defaultValue={[initialSliderPos]}
+          min={0}
+          max={notes.length - 1}
           step={1}
           onValueChange={handleSliderChange}
         />
@@ -299,19 +310,4 @@ export function SliderDemo({ className, handleChange, ...props }: SliderProps) {
       {...props}
     />
   );
-}
-
-type SliderStepName = "semitone" | "quartertone" | "major_third";
-
-function stepNameToSemitones(step: SliderStepName): number {
-  switch (step) {
-    case "semitone":
-      return 1;
-    case "quartertone":
-      return 0.5;
-    case "major_third":
-      return 4; // major third = 4 semitones
-    default:
-      return 1;
-  }
 }
