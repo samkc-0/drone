@@ -11,7 +11,7 @@ export function noteRangeToFrequency(lo: string, hi: string, toneStep: number) {
 
   if (toneStep < 0) {
     // return descending range with  negative toneStep
-    let freqs = noteRangeToFrequency(lo, hi, -toneStep).reverse();
+    let freqs = noteRangeToFrequency(lo, hi, -toneStep);
     freqs.reverse();
     return freqs;
   }

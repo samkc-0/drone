@@ -216,9 +216,11 @@ export function ChallengeView(props: ChallengeViewProps) {
       challenge.sliderRange.max,
       step,
     );
+    console.log(freqs);
     const notes = freqs.map((f: number) => {
       return frequencyToNoteWithDelta(f);
     });
+    console.log(notes);
 
     return notes;
   }, []);
