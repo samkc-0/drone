@@ -27,14 +27,15 @@ export function noteRangeToFrequency(lo: string, hi: string, toneStep: number) {
   return freqs;
 }
 
-export type NoteWithDelta = {
+export type NoteData = {
   noteName: string;
   noteMidi: number;
   deltaHz: number;
   deltaCents: number;
+  freqHz: number;
 };
 
-export function frequencyToNoteWithDelta(freqHz: number): NoteWithDelta {
+export function frequencyToNoteWithDelta(freqHz: number): NoteData {
   const midiFloat = Frequency(freqHz).toMidi();
 
   // nearest equal temperament note
@@ -50,6 +51,7 @@ export function frequencyToNoteWithDelta(freqHz: number): NoteWithDelta {
     noteMidi: nearestMidi,
     deltaHz,
     deltaCents,
+    freqHz,
   };
 }
 

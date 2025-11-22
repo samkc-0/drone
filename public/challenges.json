@@ -2,12 +2,12 @@
   {
     "id": 1,
     "name": "perfect_fifth_match",
-    "sliderInitialTone": "C4",
-    "sliderRange": { "min": "A3", "max": "E5" },
-    "sliderStep": "semitone",
+    "sliderInitialTone": "C3",
+    "sliderRange": { "min": "A2", "max": "E4" },
+    "sliderStep": "quartertone",
     "sliderSynthId": 1,
     "droneSynthId": 10,
-    "droneNote": "E5",
+    "droneNote": "D3",
     "interval": "P5"
   },
   {
@@ -18,18 +18,18 @@
     "sliderStep": "quartertone",
     "sliderSynthId": 2,
     "droneSynthId": 11,
-    "droneNote": "C5",
-    "interval": "TT"
+    "droneNote": "B3",
+    "interval": "P3"
   },
   {
     "id": 3,
     "name": "major_third_steps_minor_seventh_target",
     "sliderInitialTone": "D4",
-    "sliderRange": { "min": "C4", "max": "G5" },
+    "sliderRange": { "min": "C2", "max": "G6" },
     "sliderStep": "major_third",
     "sliderSynthId": 3,
     "droneSynthId": 12,
     "droneNote": "E5",
-    "interval": "m7"
+    "interval": "P7"
   }
 ]

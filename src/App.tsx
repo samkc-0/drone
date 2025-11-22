@@ -14,7 +14,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import type { NoteWithDelta } from "./util/tone";
+import type { NoteData } from "./util/tone";
 import {
   noteRangeToFrequency,
   intervalNameToToneStep,
@@ -59,7 +59,7 @@ export function App() {
   }
   return (
     <>
-      <IntervalGame challenges={challenges} />;
+      <IntervalGame challenges={challenges} />
     </>
   );
 }
@@ -216,22 +216,21 @@ export function ChallengeView(props: ChallengeViewProps) {
       challenge.sliderRange.max,
       step,
     );
-    console.log(freqs);
     const notes = freqs.map((f: number) => {
       return frequencyToNoteWithDelta(f);
     });
-    console.log(notes);
 
     return notes;
   }, []);
-
-  const initialSliderPos = notes.findIndex(
-    (n: NoteWithDelta) => n.noteName === challenge.sliderInitialTone,
+  const correctNote = notes.find(
+    (n: NoteData) => n.noteName === challenge.droneNote,
   );
 
-  const [sliderValue, setSliderValue] = useState([initialSliderPos]);
+  const initialSliderPos = notes.findIndex(
+    (n: NoteData) => n.noteName === challenge.sliderInitialTone,
+  );
 
-  const [currentUserNote, setCurrentUserNote] = useState<NoteWithDelta>(
+  const [currentUserNote, setCurrentUserNote] = useState<NoteData>(
     notes[initialSliderPos],
   );
 
@@ -243,29 +242,39 @@ export function ChallengeView(props: ChallengeViewProps) {
       .join(" ");
   };
 
-  const handleSliderChange = (value: number[]) => {
-    setSliderValue(value);
-  };
-
   useEffect(() => {
-    if (Tone.getContext().state != "running") return;
-    // wait 1 sec
-    const note = notes[sliderValue[0]];
+    startDrone();
+  }, []);
+
+  const handleSliderChange = (value: number[]) => {
+    stopSlider();
+    if (value.length !== 1) return;
+    if (!(value[0] in notes)) {
+      console.warn("Invalid slider value:", value);
+      return;
+    }
+    const note = notes[value[0]];
     setCurrentUserNote(note);
     playSliderPitch(note.noteName);
-  }, [sliderValue]);
+  };
 
   const handleSubmit = () => {
-    onSuccess();
+    if (currentUserNote.noteName === correctNote?.noteName) {
+      stopSlider();
+      stopDrone();
+      onSuccess();
+    } else if (correctNote.freqHz > currentUserNote.freqHz) {
+      console.log("higher!");
+    } else if (correctNote.freqHz < currentUserNote.freqHz) {
+      console.log("lower!");
+    }
   };
   return (
     <Card>
       <CardHeader>
         <CardTitle className="font-bold justify-center">
           <h1>{formatTitle()}</h1>
-          <h2>
-            {currentUserNote.noteName} - {sliderValue}
-          </h2>
+          <h2>{currentUserNote.noteName}</h2>
         </CardTitle>
       </CardHeader>
       <CardContent>
