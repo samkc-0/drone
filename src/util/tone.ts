@@ -19,7 +19,6 @@ export function noteRangeToFrequency(lo: string, hi: string, toneStep: number) {
   const epsilon = 1e-9;
   const freqs = [];
   for (let midi = loMidi; midi <= hiMidi + epsilon; midi += toneStep) {
-    freqs.push(midi);
     // clamp floating point overshoot
     const clamped = Math.min(midi, hiMidi);
     const freq = Frequency(clamped, "midi").toFrequency();
